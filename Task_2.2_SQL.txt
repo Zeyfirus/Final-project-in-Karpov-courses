@@ -1,0 +1,20 @@
+SELECT
+    a.test_grp,
+    sum(b.money)/count(DISTINCT a.st_id) as ARPU,
+    sumIf(b.money, c.cor_sum > 10) / uniqIf(a.st_id, c.cor_sum > 10)as ARPAU,
+    uniqIf(a.st_id, b.money > 0) / uniq(a.st_id)as CR_to_sale,
+    uniqIf(a.st_id, b.money > 0 AND c.cor_sum > 10) / uniqIf(a.st_id, c.cor_sum > 10) as CR_activUSER_to_sale,
+    uniqIf(a.st_id, b.subject = 'Math' AND c.math_count >= 2) / uniqIf(a.st_id, c.math_count >= 2) as CR_math
+
+FROM default.studs as a
+LEFT JOIN default.final_project_check as b
+        ON a.st_id = b.st_id
+LEFT JOIN 
+    (SELECT DISTINCT(st_id),
+        sum(correct) as cor_sum,
+        countIf(subject = 'Math') as math_count
+    FROM default.peas
+    WHERE correct = 1
+    GROUP BY st_id) as c
+    ON a.st_id=c.st_id
+GROUP BY a.test_grp

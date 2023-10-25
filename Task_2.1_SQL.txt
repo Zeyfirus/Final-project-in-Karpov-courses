@@ -1,0 +1,7 @@
+SELECT count(st_id)
+FROM(
+    SELECT st_id, sum(correct) as sum_
+    FROM default.peas  
+    GROUP BY st_id
+    )
+WHERE sum_>=20
